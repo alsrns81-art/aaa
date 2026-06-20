@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이차함수 용어 마스터</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📈 이차함수 용어 마스터</h1>
+            <p class="subtitle">수업 전 핵심 용어를 가볍게 복습해 봅시다!</p>
+        </header>
+
+        <main id="quiz-container">
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <p id="progress-text">문제 1 / 5</p>
+            <h2 id="question-text">질문이 여기에 표시됩니다.</h2>
+            <div id="options-container">
+                </div>
+        </main>
+
+        <div id="result-container" class="hidden">
+            <h2>수고하셨습니다! 🎉</h2>
+            <p id="score-text">점수: </p>
+            <button id="retry-btn" onclick="startQuiz()">처음부터 다시 풀기</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

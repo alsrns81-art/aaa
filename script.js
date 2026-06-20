@@ -1,141 +1,115 @@
-/* 기본 설정 */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+// 1. 이차함수 용어 문제 데이터 (수식이 깨지지 않도록 HTML 태그 적용)
+const quizData = [
+    {
+        question: "<i>y = ax<sup>2</sup> + bx + c</i> (<i>a &ne; 0</i>) 와 같이 <i>y</i>가 <i>x</i>에 대한 이차식으로 나타내어지는 함수를 무엇이라고 할까요?",
+        options: ["일차함수", "이차함수", "삼차함수", "이차방정식"],
+        answer: "이차함수"
+    },
+    {
+        question: "이차함수 <i>y = ax<sup>2</sup></i> 의 그래프와 같은 모양의 곡선을 무엇이라고 할까요?",
+        options: ["직선", "타원", "포물선", "쌍곡선"],
+        answer: "포물선"
+    },
+    {
+        question: "포물선은 선대칭도형입니다. 이때 대칭의 기준이 되는 선을 무엇이라고 할까요?",
+        options: ["꼭짓점", "x축", "y축", "축"],
+        answer: "축"
+    },
+    {
+        question: "포물선과 축이 만나는 점을 무엇이라고 할까요?",
+        options: ["원점", "절편", "꼭짓점", "교점"],
+        answer: "꼭짓점"
+    },
+    {
+        question: "이차함수 <i>y = x<sup>2</sup></i> 의 그래프의 꼭짓점 좌표는 무엇일까요?",
+        options: ["(0, 0)", "(1, 1)", "(0, 1)", "(1, 0)"],
+        answer: "(0, 0)"
+    }
+];
+
+// 변수 초기화
+let currentQuestionIndex = 0;
+let score = 0;
+
+// HTML 요소 가져오기
+const questionText = document.getElementById('question-text');
+const optionsContainer = document.getElementById('options-container');
+const progressText = document.getElementById('progress-text');
+const progressBar = document.getElementById('progress-bar');
+const quizContainer = document.getElementById('quiz-container');
+const resultContainer = document.getElementById('result-container');
+const scoreText = document.getElementById('score-text');
+
+// 퀴즈 시작 함수
+function startQuiz() {
+    currentQuestionIndex = 0;
+    score = 0;
+    quizContainer.classList.remove('hidden');
+    resultContainer.classList.add('hidden');
+    loadQuestion();
 }
 
-body {
-    background-color: #f0f4f8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+// 문제 로드 함수
+function loadQuestion() {
+    const currentQuiz = quizData[currentQuestionIndex];
+    
+    // 진행도 업데이트
+    progressText.innerText = `문제 ${currentQuestionIndex + 1} / ${quizData.length}`;
+    progressBar.style.width = `${((currentQuestionIndex + 1) / quizData.length) * 100}%`;
+    
+    // 질문 텍스트 삽입 (수식 HTML 태그 인식을 위해 innerHTML 사용)
+    questionText.innerHTML = currentQuiz.question;
+    
+    // 기존 선택지 초기화
+    optionsContainer.innerHTML = '';
+    
+    // 선택지 버튼 생성
+    currentQuiz.options.forEach(option => {
+        const button = document.createElement('button');
+        button.innerHTML = option; // 선택지에 수식이 들어갈 경우를 대비해 innerHTML 사용
+        button.classList.add('option-btn');
+        button.addEventListener('click', () => selectAnswer(button, option, currentQuiz.answer));
+        optionsContainer.appendChild(button);
+    });
 }
 
-/* 메인 컨테이너 */
-.container {
-    background-color: white;
-    width: 100%;
-    max-width: 500px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    padding: 30px;
-    text-align: center;
+// 정답 확인 함수
+function selectAnswer(selectedButton, selectedOption, correctAnswer) {
+    // 중복 클릭 방지를 위해 모든 버튼 비활성화
+    const buttons = optionsContainer.querySelectorAll('.option-btn');
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        // 정답인 버튼은 초록색으로 표시 (innerHTML 기준으로 비교)
+        if (btn.innerHTML === correctAnswer) {
+            btn.classList.add('correct');
+        }
+    });
+
+    // 선택한 답이 맞는지 확인
+    if (selectedOption === correctAnswer) {
+        score++;
+    } else {
+        // 틀린 경우 선택한 버튼을 빨간색으로 표시
+        selectedButton.classList.add('wrong');
+    }
+
+    // 1초 뒤에 다음 문제로 넘어가기
+    setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }, 1200);
 }
 
-header h1 {
-    color: #2c3e50;
-    font-size: 1.5rem;
-    margin-bottom: 5px;
+// 결과 화면 표시 함수
+function showResult() {
+    quizContainer.classList.add('hidden');
+    resultContainer.classList.remove('hidden');
+    scoreText.innerText = `총 ${quizData.length}문제 중 ${score}문제를 맞혔습니다!`;
 }
 
-.subtitle {
-    color: #7f8c8d;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-}
-
-/* 진행바 */
-#progress-bar-container {
-    width: 100%;
-    height: 8px;
-    background-color: #ecf0f1;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    overflow: hidden;
-}
-
-#progress-bar {
-    height: 100%;
-    background-color: #3498db;
-    width: 0%;
-    transition: width 0.3s ease;
-}
-
-#progress-text {
-    color: #95a5a6;
-    font-size: 0.85rem;
-    margin-bottom: 20px;
-}
-
-/* 퀴즈 영역 (수식 폰트 적용을 위해 수정) */
-#question-text {
-    color: #2c3e50;
-    font-size: 1.2rem;
-    margin-bottom: 25px;
-    line-height: 1.5;
-    word-break: keep-all;
-}
-
-/* 수식용 이탤릭체 스타일 지정 */
-#question-text i {
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
-}
-
-#options-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* 버튼 스타일 */
-.option-btn {
-    background-color: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    padding: 15px;
-    font-size: 1rem;
-    color: #2c3e50;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
-}
-
-.option-btn:hover {
-    background-color: #e3f2fd;
-    border-color: #3498db;
-}
-
-/* 정답/오답 표시 스타일 */
-.option-btn.correct {
-    background-color: #d4edda;
-    border-color: #28a745;
-    color: #155724;
-}
-
-.option-btn.wrong {
-    background-color: #f8d7da;
-    border-color: #dc3545;
-    color: #721c24;
-}
-
-/* 결과 영역 */
-.hidden {
-    display: none !important;
-}
-
-#score-text {
-    font-size: 1.2rem;
-    margin: 20px 0;
-    color: #2c3e50;
-    font-weight: bold;
-}
-
-#retry-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-#retry-btn:hover {
-    background-color: #2980b9;
-}
+// 페이지가 로드되면 퀴즈 시작
+startQuiz();
